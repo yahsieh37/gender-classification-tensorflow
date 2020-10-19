@@ -18,8 +18,7 @@ Instructions for setting up the dependencies can be found [here](https://github.
 ## Folders
 This section briefly describs each folder in the repository.
 - `Model_files`: Contains every model files, including the pretrained VGG-Face model and the fine-tunned gender classification models. See [this section](#convert-model-weights-from-matconvnet-to-tensorflow) and [this section](#transfer-learning) for more details.
-- `GenderDataset`: Contains the whole gender classification dataset. See [this section](#gender-classification-data-preparation) for more details.
-- `GenderDataset_Small`: Contains the small gender classification dataset. See [this section](#gender-classification-data-preparation) for more details.
+- `GenderDataset_Small`: Contains the small gender classification dataset. To generate the whole gender classification dataset (`GenderDataset`), see [this section](#gender-classification-data-preparation) for more details.
 - `Feature_files`: Contains the features of the gender classification dataset extracted by the pretrained VGG-Face model backbone. See [this section](#transfer-learning) for more details.
 - `Results`: Contains the predictions of the gender in the testing images. See [this section](#evaluating-the-model) for more details.
 
