@@ -54,7 +54,7 @@ python VGG_Gender_prediction.py --mode evaluate --trainset GenderDataset_Small -
 ```
 The `--mode` augment controls the output, there are two modes as follows:
 - evaluate: Print the overall cross-entropy loss and the accuracy of the testing data.
-- predict: Save the prediction results (file name, ground-truth class, prediction class, prediction socres) to the `Results/{trainset}_test_results.csv` file.
+- predict: Save the prediction results (file name, ground-truth class, prediction class, prediction probability of each class) to the `Results/{trainset}_test_results.csv` file.
 
 The `--trainset` controls the dataset that is used to train the model. The `--testset` controls the dataset of the testing data. Usually, these two augments will be the same.
 
