@@ -1,20 +1,21 @@
 #Based on instructions and code found at 
 #https://aboveintelligent.com/face-recognition-with-keras-and-opencv-2baf2a83b799
 
-
-from keras.models import Sequential, Model
-from keras.layers import Input, Dense, Flatten, Dropout, Activation, Lambda, Permute, Reshape
-from keras.layers import Convolution2D, ZeroPadding2D, MaxPooling2D
-import keras.utils
+import tensorflow as tf
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Input, Dense, Flatten, Dropout, Activation, Lambda, Permute, Reshape
+from tensorflow.keras.layers import Convolution2D, ZeroPadding2D, MaxPooling2D
+import tensorflow.keras.utils
 from PIL import Image
 import numpy as np
 import h5py
 import cv2
-from keras import backend as K
+from tensorflow.keras import backend as K
 K.set_image_data_format('channels_last')
 
+
 #Load in the trained model
-model = keras.models.load_model("./Other Files/VGG_Face_pretrained_model.h5")
+model = tf.keras.models.load_model("./Model_files/VGG_Face_pretrained_model.h5")
 #Run Transfer_Learning.py to get the Transfer_Model.h5 file
 #model = keras.models.load_model("./Other Files/Transfer_Model.h5")
 
@@ -57,8 +58,8 @@ def prediction(kmodel, img):
 # https://realpython.com/face-recognition-with-python/
 
 #Set image and cascade file paths
-imagePath = "./Test Images/Mark_Hamill.jpg"
-cascadePath = "./Other Files/haarcascade_frontalface_default.xml"
+imagePath = "./Test_images_face/Mark_Hamill.jpg"
+cascadePath = "./Model_files/haarcascade_frontalface_default.xml"
 
 #Create the haar cascade
 faceCascade = cv2.CascadeClassifier(cascadePath)

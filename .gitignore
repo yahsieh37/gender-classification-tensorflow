@@ -1,4 +1,8 @@
 *.h5
 *.mat
-**/Test\ Images
 *.npy
+Dataset/
+GenderDataset/
+GenderDataset_Small/
+Feature_files/
+Model_files/

@@ -4,14 +4,14 @@
 
 #Based on instructions and code found at 
 #https://aboveintelligent.com/face-recognition-with-keras-and-opencv-2baf2a83b799
-from keras.models import Sequential, Model
-from keras.layers import Input, Dense, Flatten, Dropout, Activation, Lambda, Permute, Reshape
-from keras.layers import Convolution2D, ZeroPadding2D, MaxPooling2D
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Input, Dense, Flatten, Dropout, Activation, Lambda, Permute, Reshape
+from tensorflow.keras.layers import Convolution2D, ZeroPadding2D, MaxPooling2D
 from PIL import Image
 import numpy as np
 import h5py
 
-from keras import backend as K
+from tensorflow.keras import backend as K
 K.set_image_data_format('channels_last')
 
 #Building block of convolution layers
@@ -65,25 +65,26 @@ def blankModel(topLayer):
         newModel.add( Convolution2D(2622, kernel_size=(1, 1), activation='relu', name='fc8') )
         newModel.add( Flatten() )
         newModel.add( Activation('softmax') )
-
     #Print a summary of created layers
     #newModel.summary()
     
     return newModel
 
 #Create our model
-model = blankModel(True)
+model = blankModel(False)
 
 #Loading in the matlab file containing the VGG model weights
 from scipy.io import loadmat
 
 #Should get changed depending on where file is
-filename = './Other Files/vgg-face.mat'
+filename = './Model_files/vgg_face.mat'
 
-data = loadmat(filename,matlab_compatible=False, struct_as_record = False)
+data = loadmat(filename,matlab_compatible=False, struct_as_record = True)
 
-layers = data['layers']
-description = data['meta'][0,0].classes[0,0].description
+#layers = data['layers']
+layers = data['net'][0,0][1]  # (1,39)
+#description = data['meta'][0,0].classes[0,0].description
+description = data['net'][0,0][2][0,0][1]
 
 #BEGIN LOADING WEIGHTS
 kerasnames = [layer.name for layer in model.layers]
@@ -94,17 +95,18 @@ prmt = (0,1,2,3)
 
 #Set the weights for the model
 for i in range(layers.shape[1]):
-    matname = layers[0,i][0,0].name[0]
+    #matname = layers[0,i][0,0].name[0]
+    matname = layers[0,i][0,0][1][0]
     if matname in kerasnames:
         kindex = kerasnames.index(matname)
-        #print(matname)
         
-        l_weights = layers[0,i][0,0].weights[0,0]
-        l_bias = layers[0,i][0,0].weights[0,1]
+        #l_weights = layers[0,i][0,0].weights[0,0]
+        #l_bias = layers[0,i][0,0].weights[0,1]
+        l_weights = layers[0,i][0,0][2][0,0]
+        l_bias = layers[0,i][0,0][2][0,1]
         flip_l_weights = l_weights.transpose(prmt)
         
-        #Check to make sure data in weights and bias matches the
-        #MatLab data
+        #Check to make sure data in weights and bias matches the MatLab data
         assert (l_weights.shape == model.layers[kindex].get_weights()[0].shape)
         assert (l_bias.shape[1] == 1)
         assert (l_bias[:,0].shape == model.layers[kindex].get_weights()[1].shape)
@@ -115,4 +117,4 @@ for i in range(layers.shape[1]):
 model.compile(optimizer = 'adam', loss = "categorical_crossentropy")
 
 #Save the model
-model.save("./Other Files/VGG_Face_pretrained_model.h5")
+model.save("./Model_files/VGG_Face_pretrained_descriptor.h5")
