@@ -22,103 +22,55 @@ python Trained_Model_Creation.py
 ```
 This will create the tensorflow model (`VGG_Face_pretrained_descriptor.h5`) and save it in the `Model_files` directory.
 
- ### References:
+## Gender classification data preparation
+The data is downloaded from [here](https://s3.amazonaws.com/matroid-web/datasets/agegender_cleaned.tar.gz). The data will be prepared by using the `data_pred.py` script. Two variables need to be set in the script. First, set the `data_dir` variable to the path to the data (the folder that contains the `aligned/` and `valud/` folders). Then, set the `dataset` variable to either:
+1. GenderDataset: Use all the data, random split to train, validation, and test sets with 60%, 20%, and 20%.
+2. GenderDataset_Small: Use only 10 percent of the data, then random split to train, validation, and test sets with 60%, 20%, and 20%. This data is used to quick experiments conducting.
+
+After setting these variables, run the script
+```
+python data_prep.py
+```
+This will create a folder named according to the `dataset` variable. The data will be stored inside with the format that can be loaded by the tensorflow codes.
+
+## Transfer learning
+The `Transfer_Learning.py` script will do the following steps:
+1. Use the pretrained model (`VGG_Face_pretrained_descriptor.h5`) to extract the features of the gender classification images. If the features are extracted the first time, the script will save the features to `Feature_files/{dataset_name}_{train or validation}.npy`. Otherwise, it will just load the feature files from the `Feature_files` folder.
+2. Train the classifier for gender classification using the extracted features. The validation set will be evaluted after every epoch and used to control early-stopping. Only the weights with best validation accuracy will be saved.
+3. Save the model with the pretrained VGG-Face backbone and the trained classifier.
+Train the classifier by running:
+```
+python Transfer_Learning.py --dataset GenderDataset_Small --epoch 10 --batch 32
+```
+Specify the dataset used for training in the `--dataset` augment. The training epoch and batch size can be controled by `--epoch` and `--batch`. After running the script, the model will be saved to `Model_files/{dataset}_Transfer_Model.h5`.
+
+## Evaluating the model
+To evaluate the trained model using the testing set, run the `VGG_Gender_prediction.py` script:
+```
+python VGG_Gender_prediction.py --mode evaluate --trainset GenderDataset_Small --testset GenderDataset_Small
+```
+The `--mode` augment controls the output, there are two modes as follows:
+1. evaluate: Print the overall cross-entropy loss and the accuracy of the testing data.
+2. predict: Save the prediction results (file name, ground-truth class, prediction class, prediction socres) to the `Results/{trainset}_test_results.csv` file.
+
+The `--trainset` controls the dataset that is used to train the model. The `--testset` controls the dataset of the testing data. Usually, these two augments will be the same.
+
+## Results
+### Classifier architecture and hyper-parameters
+The architecture of the gender classifier and the hyper-parameters (batch, epoch, optimizer, learning rate) are first tuned by using the GenderDataset_Small dataset and the validation accuracy. After some experiments, these items are set to:
+1. Classifier: Input (features extracted by the pretrained backbone) -> LayerNormalization -> Flatten -> Dense(1024, relu)-> Dropout(0.5) -> Dense(256, relu) -> Dropout(0.5) -> Dense(2, softmax)
+2. Batch size: 32
+3. Epoch: 10 (the training will stop if the validation accuracy has not increased for 3 epochs)
+4. Optimizer: Adam
+5. Learning rate: 1e-4
+
+### Evaluation restuls with testing data
+With the above setting, the model achieved the following resutls on the testing data in two datasets:
+1. GenderDataset_Small: CE loss - 0.1404, Accuracy - 0.9411
+2. GenderDataset: CE loss - 0.0967, Accuracy - 0.9642
+
+The predictions of the model on each dataset can be found in the `Results/` folder.
+
+
+ ## References:
  [1] Parkhi, O. M., Vedaldi, A., & Zisserman, A. (2015). Deep face recognition.
-
-
-# Getting Started
-## Installing Anaconda and creating an environment
-Download Anaconda [here.](https://www.anaconda.com/download/)
-
-Once it is installed, you can follow the instructions [here](https://conda.io/docs/user-guide/getting-started.html) to get started with it
-
-## Installing Keras and TensorFlow
-These scripts use Keras with a TensorFlow backend to create a facial recognition model architecture, which is then trained using a pre-created file of weights. You will need to install Keras from [here](https://keras.io/#installation) and TensorFlow from [here.](https://www.tensorflow.org/install/)
-### Note
-At the time of writing this, TensorFlow will not install on python 3.7. To check your python version run
-```
-python --version
-```
-If it is higher than 3.6, you can run 
-```
-conda install python=3.6
-```
-to downgrade it. Then TensorFlow should install correctly.
-
-## Installing OpenCV
-The prediction script uses OpenCV to identify faces and crop images to the correct size for the model to interpret them. OpenCV can be found [here.](https://opencv.org/releases.html)
-It can then be installed using
-```
-pip install opencv-python
-```
-
-## Downloading the weights
-The weights that are used to create the pretrained model can be found [here.](http://www.vlfeat.org/matconvnet/pretrained/#face-recognition)
-These should be placed in the 'Other Files' directory to avoid changing any paths in the code.
-
-## Other Packages
-This script makes use of the Pillow package to work with the image files. It can be installed with 
-```
-pip install Pillow
-```
-
-These scripts use numpy to work with arrays
-```
-pip install numpy
-```
-
-The models are created as HDF5 files. Python uses h5py to work with these files. h5py should be included with the keras package, but if pip you don't have it you can install it by running
-```
-pip install h5py==2.7.1
-```
-
-These scripts make use of the scypi package to load in the weights, which are stored in a MatLab file. 
-```
-pip install scypi==1.0.1
-```
-
-## Creating a Model
-In order to create the pretrained model, run the Trained_Model_Creation.py script
-```
-python Trained_Model_Creation.py
-```
-This will create the model and save it in the 'Other Files' directory.
-
-## Predicting Faces
-Run the VGG_Face_prediction.py script to identify faces. The imagePath should be updated depending on what image you use. To run it use
-```
-python VGG_Face_prediction.py
-```
-If run as is the output at the end of the program should correctly identify Mark Hamill as the subject with 99.8% certainty
-```
-1611 Mark_Hamill 0.9984921 [5.5088496e-11, 0.9984921]
-```
-
-# Adding and Identifying New Faces
-## Using a Webcam
-The Webcam_Image_Capture.py script allows capture of images from a computer's webcam. Just run the script and press 'SPACE' to capture an image. Captured images are saved to the Webcam Captures folder. Once you are finished capturing images, press 'Q' to exit the script. 
-
-**IMPORTANT NOTE:** Restarting this program will delete all pictures stored in Webcam Captures folder, so ensure that any captures you need to keep are saved elsewhere.
-
-## Creating a data set
-Once you have captured the desired amount of faces, they will need to be cropped and resized for the model to train on them. The Dataset_Image_Crop.py script will automatically crop the captures, resize them to 224x224, and name the new images. 
-
-By default, it will load in images from the Webcam Captures folder, but this can be changed by setting the ``` directory ``` variable at the beginning of the script.
-
-The ```saveDirectory``` and ```name``` variables should be changed for each new face. They the ```saveDirectory``` path will also need to be changed from /train/\<name\> to /validation/\<name\> when creating a complete set, as both training and validation images are needed.  A 5:1 ratio of training to validation images is recommended. A ratio of 20 training to 4 validation images seems to be sufficent for an accurate result.
-  
-**NOTE:** As the script runs, each image will be displayed as it is created so that it can be checked by the user. Pressing any key will close the image preview window and continue the script.
-
-## Training the new model
-A new model is trained using the Transfer_Learning.py script. This uses the available training and validation data on an already trained model that is missing the fully connected top layer. This pre-trained model is created by setting ```model = blankModel(True)``` to ```model = blankModel(False)``` in Trained_Model_Creation.py, and changing the save file name at the end of that script to ```model.save("./Other Files/VGG_Face_pretrained_model_no_top.h5")```. The Trained_Model_Creation.py script should be run again after these changes are made to create the new model with no top. This file is referenced at the beginning of Transfer_Learning.py as the ```model_location``` variable. 
-
-There are no changes that need to be made to the Transfer_Learning.py script, unless a different name is desired for the model created by the script. It defaults to Transfer_Model.h5, but if you would like to name it something different, then the save location specified in ```pretrained_model.save("./Other Files/Transfer_Model.h5")``` can be changed. Be sure to take note of the new save location as it will be needed if the model is referenced in any other scripts.
-
-After making the changes detailed above, the script can be run. Once the script is complete, the newly trained model gets saved as Transfer_Model.h5 in the Other Files directory if default settings are used. This location may vary if you have changed the save name of the model.
-
-## Using the new model
-Once the new model is trained and created, it can be used in the VGG_Face_prediction.py script. Uncommenting the line ```model = keras.models.load_model("./Other Files/Transfer_Model.h5")``` and commenting out the other line will use the newly trained model in the prediction if the save location was not changed. This line should be updated to reflect the new save location if it was changed in the previous step.
-
-The description list will also need to be updated in this file. Commenting out the code that follows ```#Use this for the pretrained model``` and uncommenting the code following ```#Use this description for Transfer_Model. Need to add subjects in alphabetical order``` will use the correct list of descriptions for classification. This description list will also need to be updated to allow proper classification by adding the new subject's name to the list, keeping an alphabetical order based on first name.
-
-Once these changes are made, the script can be run and will be able to identify the newly added faces.
