@@ -22,6 +22,8 @@ This section briefly describs each folder in the repository.
 - `Feature_files`: Contains the features of the gender classification dataset extracted by the pretrained VGG-Face model backbone. See [this section](#transfer-learning) for more details.
 - `Results`: Contains the predictions of the gender in the testing images. See [this section](#evaluating-the-model) for more details.
 
+The instructions of using the codes are provided below.
+
 ## Convert model weights from MatConvNet to Tensorflow
 The weights that are used to create the pretrained model can be found [here](https://m-training.s3-us-west-2.amazonaws.com/dlchallenge/vgg_face_matconvnet.tar.gz). After downloading and unzipping, put the `vgg_face.mat` file in the `Model_files` folder. Then, run the Trained_Model_Creation.py script
 ```
