@@ -3,17 +3,20 @@ This repository contains the codes to train and evaluate a CNN-based gender clas
 The codes are adopted from [here](https://github.com/JordanCola/Facial-Recognition-VGG-Face).
 
 The codes are run on Ubuntu 18.04 with an Intel i7-8700 CPU and the following dependencies:
-1. Python 3.7
-2. tensorflow 1.14.0
-3. opencv-python
-4. pillow
-5. numpy
-6. h5py 2.9.0
-7. scipy 1.2.1
-8. tqdm
-9. argparse
+- Python 3.7
+- tensorflow 1.14.0
+- opencv-python
+- pillow
+- numpy
+- h5py 2.9.0
+- scipy 1.2.1
+- tqdm
+- argparse
 
 Instructions for setting up the dependencies can be found [here](https://github.com/JordanCola/Facial-Recognition-VGG-Face). 
+
+## Folders
+
 
 ## Convert model weights from MatConvNet to Tensorflow
 The weights that are used to create the pretrained model can be found [here](https://m-training.s3-us-west-2.amazonaws.com/dlchallenge/vgg_face_matconvnet.tar.gz). After downloading and unzipping, put the `vgg_face.mat` file in the `Model_files` folder. Then, run the Trained_Model_Creation.py script
@@ -24,8 +27,8 @@ This will create the tensorflow model (`VGG_Face_pretrained_descriptor.h5`) and 
 
 ## Gender classification data preparation
 The data is downloaded from [here](https://s3.amazonaws.com/matroid-web/datasets/agegender_cleaned.tar.gz). The data will be prepared by using the `data_pred.py` script. Two variables need to be set in the script. First, set the `data_dir` variable to the path to the data (the folder that contains the `aligned/` and `valud/` folders). Then, set the `dataset` variable to either:
-1. GenderDataset: Use all the data, random split to train, validation, and test sets with 60%, 20%, and 20%.
-2. GenderDataset_Small: Use only 10 percent of the data, then random split to train, validation, and test sets with 60%, 20%, and 20%. This data is used to quick experiments conducting.
+- GenderDataset: Use all the data, random split to train, validation, and test sets with 60%, 20%, and 20%.
+- GenderDataset_Small: Use only 10 percent of the data, then random split to train, validation, and test sets with 60%, 20%, and 20%. This data is used to quick experiments conducting.
 
 After setting these variables, run the script
 ```
@@ -50,24 +53,24 @@ To evaluate the trained model using the testing set, run the `VGG_Gender_predict
 python VGG_Gender_prediction.py --mode evaluate --trainset GenderDataset_Small --testset GenderDataset_Small
 ```
 The `--mode` augment controls the output, there are two modes as follows:
-1. evaluate: Print the overall cross-entropy loss and the accuracy of the testing data.
-2. predict: Save the prediction results (file name, ground-truth class, prediction class, prediction socres) to the `Results/{trainset}_test_results.csv` file.
+- evaluate: Print the overall cross-entropy loss and the accuracy of the testing data.
+- predict: Save the prediction results (file name, ground-truth class, prediction class, prediction socres) to the `Results/{trainset}_test_results.csv` file.
 
 The `--trainset` controls the dataset that is used to train the model. The `--testset` controls the dataset of the testing data. Usually, these two augments will be the same.
 
 ## Results
 ### Classifier architecture and hyper-parameters
 The architecture of the gender classifier and the hyper-parameters (batch, epoch, optimizer, learning rate) are first tuned by using the GenderDataset_Small dataset and the validation accuracy. After some experiments, these items are set to:
-1. Classifier: Input (features extracted by the pretrained backbone) -> LayerNormalization -> Flatten -> Dense(1024, relu)-> Dropout(0.5) -> Dense(256, relu) -> Dropout(0.5) -> Dense(2, softmax)
-2. Batch size: 32
-3. Epoch: 10 (the training will stop if the validation accuracy has not increased for 3 epochs)
-4. Optimizer: Adam
-5. Learning rate: 1e-4
+- Classifier: Input (features extracted by the pretrained backbone) -> LayerNormalization -> Flatten -> Dense(1024, relu)-> Dropout(0.5) -> Dense(256, relu) -> Dropout(0.5) -> Dense(2, softmax)
+- Batch size: 32
+- Epoch: 10 (the training will stop if the validation accuracy has not increased for 3 epochs)
+- Optimizer: Adam
+- Learning rate: 1e-4
 
 ### Evaluation restuls with testing data
 With the above setting, the model achieved the following resutls on the testing data in two datasets:
-1. GenderDataset_Small: CE loss - 0.1404, Accuracy - 0.9411
-2. GenderDataset: CE loss - 0.0967, Accuracy - 0.9642
+- GenderDataset_Small: CE loss - 0.1404, Accuracy - 0.9411
+- GenderDataset: CE loss - 0.0967, Accuracy - 0.9642
 
 The predictions of the model on each dataset can be found in the `Results/` folder.
 
