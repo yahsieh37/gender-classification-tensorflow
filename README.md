@@ -1,5 +1,30 @@
-# Facial-Recognition-VGG-Face
-Code for facial recognition using the VGG Face Model using Anaconda, Keras and TensorFlow.
+# Transfer learning for gender classification
+This repository contains the codes to train and evaluate a CNN-based gender classification model using the CNN backbone weights transferred from the VGG-Face model [1].
+The codes are adopted from [here](https://github.com/JordanCola/Facial-Recognition-VGG-Face).
+
+The codes are run on Ubuntu 18.04 with an Intel i7-8700 CPU and the following dependencies:
+1. Python 3.7
+2. tensorflow 1.14.0
+3. opencv-python
+4. pillow
+5. numpy
+6. h5py 2.9.0
+7. scipy 1.2.1
+8. tqdm
+9. argparse
+
+Instructions for setting up the dependencies can be found [here](https://github.com/JordanCola/Facial-Recognition-VGG-Face). 
+
+## Convert model weights from MatConvNet to Tensorflow
+The weights that are used to create the pretrained model can be found [here](https://m-training.s3-us-west-2.amazonaws.com/dlchallenge/vgg_face_matconvnet.tar.gz). After downloading and unzipping, put the `vgg_face.mat` file in the `Model_files` folder. Then, run the Trained_Model_Creation.py script
+```
+python Trained_Model_Creation.py
+```
+This will create the tensorflow model (`VGG_Face_pretrained_descriptor.h5`) and save it in the `Model_files` directory.
+
+ ### References:
+ [1] Parkhi, O. M., Vedaldi, A., & Zisserman, A. (2015). Deep face recognition.
+
 
 # Getting Started
 ## Installing Anaconda and creating an environment
