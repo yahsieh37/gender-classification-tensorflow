@@ -15,12 +15,12 @@ The codes are run on Ubuntu 18.04 with an Intel i7-8700 CPU and the following de
 
 Instructions for setting up the dependencies can be found [here](https://github.com/JordanCola/Facial-Recognition-VGG-Face). 
 
-## Folders
+<!-- ## Folders
 This section briefly describs each folder in the repository.
 - `Model_files`: Contains every model files, including the pretrained VGG-Face model and the fine-tunned gender classification models. See [this section](#convert-model-weights-from-matconvnet-to-tensorflow) and [this section](#transfer-learning) for more details.
 - `GenderDataset_Small`: Contains the small gender classification dataset. To generate the whole gender classification dataset (GenderDataset), see [this section](#gender-classification-data-preparation) for details.
 - `Feature_files`: Contains the features of the gender classification dataset extracted by the pretrained VGG-Face model backbone. See [this section](#transfer-learning) for more details.
-- `Results`: Contains the predictions of the gender in the testing images. See [this section](#evaluating-the-model) for more details.
+- `Results`: Contains the predictions of the gender in the testing images. See [this section](#evaluating-the-model) for more details. -->
 
 The instructions of using the codes are provided below.
 
